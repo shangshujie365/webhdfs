@@ -108,7 +108,7 @@ webhdfs_conf_t *webhdfs_conf_load (const char *filename) {
         return(NULL);
 
     /* Parse json */
-    if ((node = yajl_tree_parse(cbuf, buffer, sizeof(buffer))) == NULL) {
+    if ((node = yajl_tree_parse((const char *)cbuf, buffer, sizeof(buffer))) == NULL) {
         fprintf(stderr, "conf-parse: %s\n", buffer);
         free(cbuf);
         return(NULL);

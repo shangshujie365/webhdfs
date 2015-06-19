@@ -19,11 +19,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <yajl/yajl_tree.h>
+
 #include <curl/curl.h>
+#include <yajl/yajl_tree.h>
 
 #include "webhdfs_p.h"
 #include "webhdfs.h"
+
+#include <glog/logging.h>
 
 static size_t __webhdfs_req_write (void *ptr,
                                    size_t size,
@@ -116,6 +119,7 @@ int webhdfs_req_exec (webhdfs_req_t *req, int type) {
         return(1);
 
     curl_easy_setopt(curl, CURLOPT_URL, req->buffer.blob);
+    DLOG(INFO) << "downloading url: " << req->buffer.blob;
     buffer_clear(&(req->buffer));
 
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 0);
@@ -186,7 +190,7 @@ yajl_val webhdfs_req_json_response (webhdfs_req_t *req) {
     if (req->buffer.size == 0)
         return(NULL);
 
-    if ((node = yajl_tree_parse(req->buffer.blob, err, sizeof(err))) == NULL)
+    if ((node = yajl_tree_parse((const char *)req->buffer.blob, err, sizeof(err))) == NULL)
         fprintf(stderr, "response-parse: %s\n", err);
 
     return(node);

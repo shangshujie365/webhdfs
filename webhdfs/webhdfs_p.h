@@ -71,6 +71,7 @@ struct webhdfs_file {
 int      webhdfs_req_open                 (webhdfs_req_t *req,
                                            webhdfs_t *fs,
                                            const char *path);
+void     webhdfs_req_close                (webhdfs_req_t *req);
 void     webhdfs_req_free                 (webhdfs_req_t *req);
 
 int      webhdfs_req_set_args             (webhdfs_req_t *req,
