@@ -77,7 +77,6 @@ const webhdfs_fstat_t *webhdfs_dir_read (webhdfs_dir_t *dir) {
     const char *mtime[] = {"modificationTime", NULL};
     const char *block[] = {"blockSize", NULL};
     const char *atime[] = {"accessTime", NULL};
-    webhdfs_fstat_t stat;
     yajl_val node, v;
 
     if (dir->current >= YAJL_GET_ARRAY(dir->statuses)->len)

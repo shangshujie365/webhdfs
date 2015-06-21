@@ -77,7 +77,6 @@ webhdfs_file_t *webhdfs_file_open (webhdfs_t *fs,
                                    const char *path)
 {
     webhdfs_file_t *file;
-    yajl_val node, v;
 
     if ((file = (webhdfs_file_t *) malloc(sizeof(webhdfs_file_t))) == NULL)
         return(NULL);
@@ -132,7 +131,7 @@ size_t webhdfs_file_pread (webhdfs_file_t *file,
                            size_t offset)
 {
     webhdfs_req_t req;
-    yajl_val node, v;
+    yajl_val v;
     size_t size = 0;
 
     webhdfs_req_open(&req, file->fs, file->path);
