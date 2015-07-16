@@ -151,6 +151,7 @@ int webhdfs_req_exec (webhdfs_req_t *req, int type) {
             fprintf(stderr, "%s\n", curl_easy_strerror(err));
 
         curl_easy_getinfo(curl, CURLINFO_REDIRECT_URL, &url);
+        DLOG(INFO) << "downloading url: " << url;
 
         curl_easy_setopt(curl, CURLOPT_URL, url);
 

@@ -56,7 +56,7 @@ int webhdfs_file_create (webhdfs_t *fs,
     yajl_val node, v;
 
     webhdfs_req_open(&req, fs, path);
-    webhdfs_req_set_args(&req, "op=CREATE&override=%s",
+    webhdfs_req_set_args(&req, "op=CREATE&overwrite=%s",
                                override ? "true" : "false");
     webhdfs_req_set_upload(&req, upload_func, upload_data);
     webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
