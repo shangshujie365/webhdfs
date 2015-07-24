@@ -90,7 +90,7 @@ int buffer_append (buffer_t *buffer, const void *blob, size_t size) {
     size_t n;
 
     if ((n = (buffer->size + size)) >= buffer->block) {
-        if (__buffer_grow(buffer, n))
+        if (__buffer_grow(buffer, n + 1))
             return(1);
     }
 
