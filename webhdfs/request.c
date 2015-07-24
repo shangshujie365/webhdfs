@@ -92,7 +92,7 @@ int webhdfs_req_set_args (webhdfs_req_t *req,
                           ...)
 {
     va_list ap;
-    int r;
+    int r = 0;
 
     va_start(ap, frmt);
     buffer_append_vformat(&(req->buffer), frmt, ap);
