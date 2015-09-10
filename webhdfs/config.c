@@ -39,11 +39,11 @@ webhdfs_conf_t *webhdfs_conf_alloc (void) {
 }
 
 void webhdfs_conf_free (webhdfs_conf_t *conf) {
-    if (conf->host != NULL)
-        free(conf->host);
+    if (conf->hdfs_host != NULL)
+        free(conf->hdfs_host);
 
-    if (conf->user != NULL)
-        free(conf->user);
+    if (conf->hdfs_user != NULL)
+        free(conf->hdfs_user);
 
     if (conf->token != NULL)
         free(conf->token);
@@ -95,9 +95,10 @@ webhdfs_conf_t *webhdfs_conf_load (const char *filename) {
     const char *jsonUseSsl[] = {"use-ssl", NULL};
     const char *jsonToken[] = {"token", NULL};
     const char *jsonDoAs[] = {"doas", NULL};
-    const char *jsonUser[] = {"user", NULL};
-    const char *jsonHost[] = {"host", NULL};
-    const char *jsonPort[] = {"port", NULL};
+    const char *jsonUser[] = {"hdfsUser", NULL};
+    const char *jsonHost[] = {"hdfsHost", NULL};
+    const char *jsonPort[] = {"webhdfsPort", NULL};
+    const char *jsonHdfsPort[] = {"hdfsPort", NULL};
     webhdfs_conf_t *conf;
     char buffer[1024];
     yajl_val node, v;
@@ -126,19 +127,22 @@ webhdfs_conf_t *webhdfs_conf_load (const char *filename) {
         conf->token = strdup(YAJL_GET_STRING(v));
 
     if ((v = yajl_tree_get(node, jsonHost, yajl_t_string)) != NULL)
-        conf->host = strdup(YAJL_GET_STRING(v));
+        conf->hdfs_host = strdup(YAJL_GET_STRING(v));
 
     if ((v = yajl_tree_get(node, jsonDoAs, yajl_t_string)) != NULL)
         conf->doas = strdup(YAJL_GET_STRING(v));
 
     if ((v = yajl_tree_get(node, jsonUser, yajl_t_string)) != NULL)
-        conf->user = strdup(YAJL_GET_STRING(v));
+        conf->hdfs_user = strdup(YAJL_GET_STRING(v));
 
     if ((v = yajl_tree_get(node, jsonUseSsl, yajl_t_number)) != NULL)
         conf->use_ssl = YAJL_IS_TRUE(v);
 
     if ((v = yajl_tree_get(node, jsonPort, yajl_t_number)) != NULL)
-        conf->port = YAJL_GET_INTEGER(v);
+        conf->webhdfs_port = YAJL_GET_INTEGER(v);
+
+    if ((v = yajl_tree_get(node, jsonHdfsPort, yajl_t_number)) != NULL)
+        conf->hdfs_port = YAJL_GET_INTEGER(v);
 
     yajl_tree_free(node);
     return(conf);
@@ -149,13 +153,13 @@ int webhdfs_conf_set_server (webhdfs_conf_t *conf,
                              int port,
                              int use_ssl)
 {
-    if (conf->host != NULL)
-        free(conf->host);
+    if (conf->hdfs_host != NULL)
+        free(conf->hdfs_host);
 
-    if ((conf->host = strdup(host)) == NULL)
+    if ((conf->hdfs_host = strdup(host)) == NULL)
         return(1);
 
-    conf->port = port;
+    conf->webhdfs_port = port;
     conf->use_ssl = use_ssl;
 
     return(0);
@@ -164,10 +168,10 @@ int webhdfs_conf_set_server (webhdfs_conf_t *conf,
 int webhdfs_conf_set_user (webhdfs_conf_t *conf,
                            const char *user)
 {
-    if (conf->user != NULL)
-        free(conf->user);
+    if (conf->hdfs_user != NULL)
+        free(conf->hdfs_user);
 
-    if ((conf->user = strdup(user)) == NULL)
+    if ((conf->hdfs_user = strdup(user)) == NULL)
         return(1);
 
     return(0);
