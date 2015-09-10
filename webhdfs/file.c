@@ -59,7 +59,9 @@ int webhdfs_file_create (webhdfs_t *fs,
     webhdfs_req_set_args(&req, "op=CREATE&overwrite=%s",
                                override ? "true" : "false");
     webhdfs_req_set_upload(&req, upload_func, upload_data);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -100,7 +102,9 @@ int webhdfs_file_append (webhdfs_file_t *file,
     webhdfs_req_open(&req, file->fs, file->path);
     webhdfs_req_set_args(&req, "op=APPEND");
     webhdfs_req_set_upload(&req, upload_func, upload_data);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_POST);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_POST, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -136,7 +140,9 @@ size_t webhdfs_file_pread (webhdfs_file_t *file,
 
     webhdfs_req_open(&req, file->fs, file->path);
     webhdfs_req_set_args(&req, "op=OPEN&offset=%ld&length=%ld", offset, nbyte);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_GET);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_GET, &error);
+    if (error) free(error);
 
     if (req.rcode == 200) {
         size = req.buffer.size;

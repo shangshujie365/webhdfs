@@ -35,7 +35,9 @@ webhdfs_dir_t *webhdfs_dir_open (webhdfs_t *fs,
 
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=LISTSTATUS");
-    webhdfs_req_exec(&req, WEBHDFS_REQ_GET);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_GET, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 

@@ -61,7 +61,14 @@ webhdfs_fstat_t *webhdfs_stat (webhdfs_t *fs,
 
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=GETFILESTATUS");
-    webhdfs_req_exec(&req, WEBHDFS_REQ_GET);
+    char *error2 = NULL;
+    int ret = -1;
+    if ((ret = webhdfs_req_exec(&req, WEBHDFS_REQ_GET, &error2)) != 0) {
+        *error = __strdup(error2);
+        free(error2);
+        webhdfs_req_close(&req);
+        return(NULL);
+    }
     root = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -143,7 +150,9 @@ static int __webhdfs_delete (webhdfs_t *fs, const char *path, int recursive) {
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=DELETE&recursive=%s",
                                recursive ? "true" : "false");
-    webhdfs_req_exec(&req, WEBHDFS_REQ_DELETE);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_DELETE, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -168,7 +177,9 @@ int webhdfs_mkdir (webhdfs_t *fs, const char *path, int permission) {
 
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=MKDIRS&permission=%o", permission);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -201,7 +212,9 @@ int webhdfs_rename (webhdfs_t *fs, const char *oldname, const char *newname) {
 
     webhdfs_req_open(&req, fs, oldname);
     webhdfs_req_set_args(&req, "op=RENAME&destination=%s", newname);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -230,7 +243,9 @@ int webhdfs_chown (webhdfs_t *fs,
 
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=SETOWNER&user=%s&group=%s", user, group);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -249,7 +264,9 @@ int webhdfs_chmod (webhdfs_t *fs, const char *path, int permission) {
 
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=SETPERMISSION&permission=%o", permission);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -268,7 +285,9 @@ int webhdfs_set_replication (webhdfs_t *fs, const char *path, int replication) {
 
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=SETREPLICATION&replication=%d", replication);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -294,7 +313,9 @@ int webhdfs_set_times (webhdfs_t *fs, const char *path, int mtime, int atime) {
     webhdfs_req_open(&req, fs, path);
     webhdfs_req_set_args(&req, "op=SETTIMES&modificationtime=%d&accesstime=%d",
                                mtime, atime);
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
@@ -313,7 +334,9 @@ char *webhdfs_home_dir (webhdfs_t *fs) {
 
     webhdfs_req_open(&req, fs, NULL);
     webhdfs_req_set_args(&req, "op=GETHOMEDIRECTORY");
-    webhdfs_req_exec(&req, WEBHDFS_REQ_GET);
+    char *error = NULL;
+    webhdfs_req_exec(&req, WEBHDFS_REQ_GET, &error);
+    if (error) free(error);
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 

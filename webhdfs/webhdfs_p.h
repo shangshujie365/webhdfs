@@ -82,7 +82,8 @@ int      webhdfs_req_set_upload           (webhdfs_req_t *req,
                                            webhdfs_upload_t func,
                                            void *user_data);
 int      webhdfs_req_exec                 (webhdfs_req_t *req,
-                                           int type);
+                                           int type,
+                                           char **error);
 
 yajl_val webhdfs_req_json_response        (webhdfs_req_t *req);
 

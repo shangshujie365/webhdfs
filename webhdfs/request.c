@@ -110,7 +110,7 @@ int webhdfs_req_set_upload (webhdfs_req_t *req,
     return(0);
 }
 
-int webhdfs_req_exec (webhdfs_req_t *req, int type) {
+int webhdfs_req_exec (webhdfs_req_t *req, int type, char **error) {
     struct curl_slist *headers = NULL;
     CURLcode err;
     CURL *curl;
@@ -172,8 +172,13 @@ int webhdfs_req_exec (webhdfs_req_t *req, int type) {
     }
 
     buffer_clear(&(req->buffer));
-    if ((err = curl_easy_perform(curl)))
-        fprintf(stderr, "%s\n", curl_easy_strerror(err));
+    if ((err = curl_easy_perform(curl))) {
+        //fprintf(stderr, "%s\n", curl_easy_strerror(err));
+        *error = (char *)malloc(512);
+        if (*error != NULL) {
+            snprintf(*error, 512, "%s (url: %s)", curl_easy_strerror(err), req->buffer.blob);
+        }
+    }
 
     if (headers != NULL)
         curl_slist_free_all(headers);
