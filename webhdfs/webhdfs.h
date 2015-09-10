@@ -96,7 +96,8 @@ const webhdfs_fstat_t *webhdfs_dir_read           (webhdfs_dir_t *dir);
 void                   webhdfs_dir_close          (webhdfs_dir_t *dir);
 
 webhdfs_fstat_t *      webhdfs_stat               (webhdfs_t *fs,
-                                                   const char *path);
+                                                   const char *path,
+                                                   char **error);
 void                   webhdfs_fstat_free         (webhdfs_fstat_t *fstat);
 
 int                    webhdfs_mkdir              (webhdfs_t *fs,
