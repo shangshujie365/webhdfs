@@ -91,7 +91,8 @@ static char *__load_file (const char *filename) {
     return(blob);
 }
 
-webhdfs_conf_t *webhdfs_conf_load (const char *filename) {
+webhdfs_conf_t *webhdfs_conf_load (const char *filename,
+                                   char **error) {
     const char *jsonUseSsl[] = {"use-ssl", NULL};
     const char *jsonToken[] = {"token", NULL};
     const char *jsonDoAs[] = {"doas", NULL};
@@ -128,21 +129,65 @@ webhdfs_conf_t *webhdfs_conf_load (const char *filename) {
 
     if ((v = yajl_tree_get(node, jsonHost, yajl_t_string)) != NULL)
         conf->hdfs_host = strdup(YAJL_GET_STRING(v));
+    else {
+        *error = (char *)malloc(512);
+        if (*error == NULL) {
+            return(NULL);
+        }
+        snprintf(*error, 512,
+                 "Error parsing hdfsHost parameter. "
+                 "Check hdfsConfigurationFile (%s) "
+                 "and make sure hdfsHost is present and it's of string type.", filename);
+        return(NULL);
+    }
 
     if ((v = yajl_tree_get(node, jsonDoAs, yajl_t_string)) != NULL)
         conf->doas = strdup(YAJL_GET_STRING(v));
 
     if ((v = yajl_tree_get(node, jsonUser, yajl_t_string)) != NULL)
         conf->hdfs_user = strdup(YAJL_GET_STRING(v));
+    else {
+        *error = (char *)malloc(512);
+        if (*error == NULL) {
+            return(NULL);
+        }
+        snprintf(*error, 512,
+                 "Error parsing hdfsUser parameter. "
+                 "Check hdfsConfigurationFile (%s) "
+                 "and make sure hdfsUser is present and it's of string type.", filename);
+        return(NULL);
+    }
 
     if ((v = yajl_tree_get(node, jsonUseSsl, yajl_t_number)) != NULL)
         conf->use_ssl = YAJL_IS_TRUE(v);
 
     if ((v = yajl_tree_get(node, jsonPort, yajl_t_number)) != NULL)
         conf->webhdfs_port = YAJL_GET_INTEGER(v);
+    else {
+        *error = (char *)malloc(512);
+        if (*error == NULL) {
+            return(NULL);
+        }
+        snprintf(*error, 512,
+                 "Error parsing webhdfsPort parameter. "
+                 "Check hdfsConfigurationFile (%s) "
+                 "and make sure webhdfsPort is present and it's of integer type.", filename);
+        return(NULL);
+    }
 
     if ((v = yajl_tree_get(node, jsonHdfsPort, yajl_t_number)) != NULL)
         conf->hdfs_port = YAJL_GET_INTEGER(v);
+    else {
+        *error = (char *)malloc(512);
+        if (*error == NULL) {
+            return(NULL);
+        }
+        snprintf(*error, 512,
+                 "Error parsing hdfsPort parameter. "
+                 "Check hdfsConfigurationFile (%s) "
+                 "and make sure hdfsPort is present and it's of integer type.", filename);
+        return(NULL);
+    }
 
     yajl_tree_free(node);
     return(conf);
