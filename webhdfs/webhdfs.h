@@ -71,7 +71,8 @@ int                     webhdfs_file_create       (webhdfs_t *fs,
                                                    const char *path,
                                                    int override,
                                                    webhdfs_upload_t upload_f,
-                                                   void *upload_data);
+                                                   void *upload_data,
+                                                   char **error);
 webhdfs_file_t *        webhdfs_file_open         (webhdfs_t *fs,
                                                    const char *path);
 int                     webhdfs_file_append       (webhdfs_file_t *file,

@@ -147,8 +147,21 @@ int webhdfs_req_exec (webhdfs_req_t *req, int type, char **error) {
     if (req->upload != NULL) {
         char *url;
 
-        if ((err = curl_easy_perform(curl)))
-            fprintf(stderr, "%s\n", curl_easy_strerror(err));
+        if ((err = curl_easy_perform(curl))) {
+            //fprintf(stderr, "%s\n", curl_easy_strerror(err));
+            *error = (char *)malloc(512);
+            if (*error != NULL) {
+                snprintf(*error, 512, "%s (url: %s)", curl_easy_strerror(err), req->buffer.blob);
+            }
+
+            if (headers != NULL)
+                curl_slist_free_all(headers);
+
+            curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &(req->rcode));
+            curl_easy_cleanup(curl);
+
+            return(err != 0);
+        }
 
         curl_easy_getinfo(curl, CURLINFO_REDIRECT_URL, &url);
         DLOG(INFO) << "downloading url: " << url;

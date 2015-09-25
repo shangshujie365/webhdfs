@@ -25,6 +25,8 @@
 #include "webhdfs_p.h"
 #include "webhdfs.h"
 
+#define __strdup(x)         ((x != NULL && strlen(x) > 0) ? strdup(x) : NULL)
+
 struct append_buffer {
     const char *buffer;
     size_t offset;
@@ -50,7 +52,8 @@ int webhdfs_file_create (webhdfs_t *fs,
                          const char *path,
                          int override,
                          webhdfs_upload_t upload_func,
-                         void *upload_data)
+                         void *upload_data,
+                         char **error)
 {
     webhdfs_req_t req;
     yajl_val node, v;
@@ -59,14 +62,21 @@ int webhdfs_file_create (webhdfs_t *fs,
     webhdfs_req_set_args(&req, "op=CREATE&overwrite=%s",
                                override ? "true" : "false");
     webhdfs_req_set_upload(&req, upload_func, upload_data);
-    char *error = NULL;
-    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, &error);
-    if (error) free(error);
+
+    webhdfs_req_exec(&req, WEBHDFS_REQ_PUT, error);
+    if (*error) {
+        webhdfs_req_close(&req);
+        return(1);
+    }
     node = webhdfs_req_json_response(&req);
     webhdfs_req_close(&req);
 
     /* Exception */
     if ((v = webhdfs_response_exception(node)) != NULL) {
+        const char *messageNode[] = {"message", NULL};
+        yajl_val message = yajl_tree_get(v, messageNode, yajl_t_string);
+        *error = __strdup(YAJL_GET_STRING(message));
+
         yajl_tree_free(node);
         return(1);
     }
